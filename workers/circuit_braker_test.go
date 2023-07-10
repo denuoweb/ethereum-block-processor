@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qtumproject/ethereum-block-processor/jsonrpc"
-	"github.com/qtumproject/ethereum-block-processor/log"
+	"github.com/denuoweb/ethereum-block-processor/jsonrpc"
+	"github.com/denuoweb/ethereum-block-processor/log"
 	"github.com/sony/gobreaker"
 )
 
@@ -22,7 +22,7 @@ var mockJsonRPCResponse = []byte(`{"jsonrpc":"2.0","result":{"number":"0xf4245",
 var mockJsonErrorResponse = []byte(`{"jsonrpc":"2.0","id":1,"error":{"code":-32700,"message":"Parse error"}}`)
 var want = jsonrpc.HashPair{
 	BlockNumber: 1,
-	QtumHash:    "0xc93a8f7c6004b5f1a7b7509ba5e877e0abd2d4774c52e53ca5ec71be9bb19917",
+	HtmlcoinHash:    "0xc93a8f7c6004b5f1a7b7509ba5e877e0abd2d4774c52e53ca5ec71be9bb19917",
 	EthHash:     "0x52163f7abec7ab638818ae3be488aa7faf8c8594b502bcd95d69d9d53cda7088",
 }
 

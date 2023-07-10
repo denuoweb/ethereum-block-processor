@@ -5,12 +5,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qtumproject/ethereum-block-processor/log"
+	"github.com/denuoweb/ethereum-block-processor/log"
 	"github.com/sirupsen/logrus"
 
 	"time"
 
-	"github.com/qtumproject/ethereum-block-processor/jsonrpc"
+	"github.com/denuoweb/ethereum-block-processor/jsonrpc"
 	"github.com/sony/gobreaker"
 )
 

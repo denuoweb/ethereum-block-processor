@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qtumproject/ethereum-block-processor/jsonrpc"
-	"github.com/qtumproject/ethereum-block-processor/log"
+	"github.com/denuoweb/ethereum-block-processor/jsonrpc"
+	"github.com/denuoweb/ethereum-block-processor/log"
 	"github.com/sirupsen/logrus"
 	"github.com/sony/gobreaker"
 )
@@ -299,23 +299,23 @@ func (w *worker) handleBlock(ctx context.Context, blockNumber int64) {
 		return
 	}
 
-	var qtumBlock jsonrpc.GetBlockByNumberResponse
-	err = jsonrpc.GetBlockFromRPCResponse(rpcResponse, &qtumBlock)
+	var htmlcoinBlock jsonrpc.GetBlockByNumberResponse
+	err = jsonrpc.GetBlockFromRPCResponse(rpcResponse, &htmlcoinBlock)
 	if err != nil {
-		w.logger.Error("could not convert result to qtum.GetBlockByNumberResponse: ", err)
+		w.logger.Error("could not convert result to htmlcoin.GetBlockByNumberResponse: ", err)
 		w.state.fails.updateFailedBlocks(blockNumber)
 		return
 	}
 	var ethBlock jsonrpc.EthBlockHeader
 	err = jsonrpc.GetBlockFromRPCResponse(rpcResponse, &ethBlock)
 	if err != nil {
-		w.logger.Error("could not convert result to qtum.EthBlockHeader: ", err)
+		w.logger.Error("could not convert result to htmlcoin.EthBlockHeader: ", err)
 		w.state.fails.updateFailedBlocks(blockNumber)
 		return
 	}
 
 	hashPair := jsonrpc.HashPair{
-		QtumHash:    qtumBlock.Hash,
+		HtmlcoinHash:    htmlcoinBlock.Hash,
 		EthHash:     ethBlock.Hash().String(),
 		BlockNumber: int(blockNumber),
 	}

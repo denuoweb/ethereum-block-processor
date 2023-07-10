@@ -9,8 +9,8 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
-	"github.com/qtumproject/ethereum-block-processor/jsonrpc"
-	"github.com/qtumproject/ethereum-block-processor/log"
+	"github.com/denuoweb/ethereum-block-processor/jsonrpc"
+	"github.com/denuoweb/ethereum-block-processor/log"
 	"github.com/schollz/progressbar/v3"
 	"github.com/sirupsen/logrus"
 )
@@ -32,7 +32,7 @@ func (config DbConfig) String() string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", config.Host, config.Port, config.User, config.Password, config.DBName, ssl)
 }
 
-type QtumDB struct {
+type HtmlcoinDB struct {
 	db           *sql.DB
 	logger       *logrus.Entry
 	records      int64
@@ -43,7 +43,7 @@ type QtumDB struct {
 	mutex        sync.RWMutex
 }
 
-func NewQtumDB(ctx context.Context, connectionString string, resultChan chan jsonrpc.HashPair, errChan chan error) (*QtumDB, error) {
+func NewHtmlcoinDB(ctx context.Context, connectionString string, resultChan chan jsonrpc.HashPair, errChan chan error) (*HtmlcoinDB, error) {
 	dbLogger, _ := log.GetLogger()
 	logger := dbLogger.WithField("module", "db")
 	db, err := sql.Open("postgres", connectionString)
@@ -56,25 +56,25 @@ func NewQtumDB(ctx context.Context, connectionString string, resultChan chan jso
 	}
 
 	logger.Debug("Database Connected!")
-	createHashes := `CREATE TABLE IF NOT EXISTS "Hashes" ("BlockNum" int, "ChainId" int, "Eth" text, "Qtum" text NOT NULL, PRIMARY KEY("Eth", "ChainId"))`
+	createHashes := `CREATE TABLE IF NOT EXISTS "Hashes" ("BlockNum" int, "ChainId" int, "Eth" text, "Htmlcoin" text NOT NULL, PRIMARY KEY("Eth", "ChainId"))`
 	_, err = db.ExecContext(ctx, createHashes)
 
 	if err != nil {
 		return nil, errors.WithMessage(err, "Failed to create 'Hashes' table")
 	}
 
-	return &QtumDB{db: db, logger: logger, resultChan: resultChan, shutdownChan: make(chan struct{}), errChan: errChan}, nil
+	return &HtmlcoinDB{db: db, logger: logger, resultChan: resultChan, shutdownChan: make(chan struct{}), errChan: errChan}, nil
 }
 
-func (q *QtumDB) insert(ctx context.Context, blockNum, chainID int, eth, qtum string) (sql.Result, error) {
+func (q *HtmlcoinDB) insert(ctx context.Context, blockNum, chainID int, eth, htmlcoin string) (sql.Result, error) {
 	if chainID == 0 {
 		panic(chainID)
 	}
-	insertDynStmt := `INSERT INTO "Hashes"("BlockNum", "ChainId", "Eth", "Qtum") VALUES($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT "Hashes_pkey" DO UPDATE SET "Qtum" = $3`
-	return q.db.ExecContext(ctx, insertDynStmt, blockNum, chainID, eth, qtum)
+	insertDynStmt := `INSERT INTO "Hashes"("BlockNum", "ChainId", "Eth", "Htmlcoin") VALUES($1, $2, $3, $4) ON CONFLICT ON CONSTRAINT "Hashes_pkey" DO UPDATE SET "Htmlcoin" = $3`
+	return q.db.ExecContext(ctx, insertDynStmt, blockNum, chainID, eth, htmlcoin)
 }
 
-func (q *QtumDB) GetMissingBlocks(ctx context.Context, chainId int, latestBlock int64) ([]int64, error) {
+func (q *HtmlcoinDB) GetMissingBlocks(ctx context.Context, chainId int, latestBlock int64) ([]int64, error) {
 	offset := 0
 	limit := 500000
 	missingBlocks := make([]int64, latestBlock+int64(limit))
@@ -99,7 +99,7 @@ func (q *QtumDB) GetMissingBlocks(ctx context.Context, chainId int, latestBlock 
 	}
 }
 
-func (q *QtumDB) GetMissingBlocksRange(ctx context.Context, chainId int, latestBlock int64, limit, offset int) ([]int64, int, error) {
+func (q *HtmlcoinDB) GetMissingBlocksRange(ctx context.Context, chainId int, latestBlock int64, limit, offset int) ([]int64, int, error) {
 	// takes 1.5 sec for 2m rows on local postgres dev instance
 	missing := `
 	SELECT "B"."BlockNum"
@@ -129,8 +129,8 @@ func (q *QtumDB) GetMissingBlocksRange(ctx context.Context, chainId int, latestB
 	return result[0:rowCount], limit + offset, nil
 }
 
-func (q *QtumDB) getQtumHash(ctx context.Context, chainId int, ethHash string) (*sql.Rows, error) {
-	selectStatement := `SELECT "Qtum" FROM "Hashes" WHERE "Hashes"."ChainId" = $1 AND "Hashes"."Eth" = $2`
+func (q *HtmlcoinDB) getHtmlcoinHash(ctx context.Context, chainId int, ethHash string) (*sql.Rows, error) {
+	selectStatement := `SELECT "Htmlcoin" FROM "Hashes" WHERE "Hashes"."ChainId" = $1 AND "Hashes"."Eth" = $2`
 	if ctx == nil {
 		return q.db.Query(selectStatement, chainId, ethHash)
 	} else {
@@ -138,15 +138,15 @@ func (q *QtumDB) getQtumHash(ctx context.Context, chainId int, ethHash string) (
 	}
 }
 
-func (q *QtumDB) GetQtumHash(chainId int, ethHash string) (*string, error) {
-	return q.GetQtumHashContext(nil, chainId, ethHash)
+func (q *HtmlcoinDB) GetHtmlcoinHash(chainId int, ethHash string) (*string, error) {
+	return q.GetHtmlcoinHashContext(nil, chainId, ethHash)
 }
 
-func (q *QtumDB) GetQtumHashContext(ctx context.Context, chainId int, ethHash string) (*string, error) {
-	var qtumHash string
-	rows, err := q.getQtumHash(ctx, chainId, ethHash)
+func (q *HtmlcoinDB) GetHtmlcoinHashContext(ctx context.Context, chainId int, ethHash string) (*string, error) {
+	var htmlcoinHash string
+	rows, err := q.getHtmlcoinHash(ctx, chainId, ethHash)
 	if err != nil {
-		return &qtumHash, err
+		return &htmlcoinHash, err
 	}
 
 	if rows == nil {
@@ -157,17 +157,17 @@ func (q *QtumDB) GetQtumHashContext(ctx context.Context, chainId int, ethHash st
 		return nil, nil
 	}
 
-	err = rows.Scan(&qtumHash)
-	return &qtumHash, err
+	err = rows.Scan(&htmlcoinHash)
+	return &htmlcoinHash, err
 }
 
-func (q *QtumDB) Shutdown() {
+func (q *HtmlcoinDB) Shutdown() {
 	q.mutex.Lock()
 	defer q.mutex.Unlock()
 	q.shutdownChan <- struct{}{}
 }
 
-func (q *QtumDB) Start(ctx context.Context, chainId int, dbCloseChan chan error) {
+func (q *HtmlcoinDB) Start(ctx context.Context, chainId int, dbCloseChan chan error) {
 	q.mutex.Lock()
 	if q.running {
 		q.mutex.Unlock()
@@ -217,7 +217,7 @@ func (q *QtumDB) Start(ctx context.Context, chainId int, dbCloseChan chan error)
 			}
 
 			if !ok {
-				q.logger.Info("QtumDB -> channel closed")
+				q.logger.Info("HtmlcoinDB -> channel closed")
 				err := q.db.Close()
 				dbCloseChan <- err
 				return
@@ -242,7 +242,7 @@ func (q *QtumDB) Start(ctx context.Context, chainId int, dbCloseChan chan error)
 				start = time.Now()
 				progBar = getBar(PROGRESS_LEVEL_THRESHOLD)
 			}
-			_, err := q.insert(ctx, pair.BlockNumber, chainId, pair.EthHash, pair.QtumHash)
+			_, err := q.insert(ctx, pair.BlockNumber, chainId, pair.EthHash, pair.HtmlcoinHash)
 			if err != nil {
 				q.logger.Error("error writing to db: ", err, " for block: ", pair.BlockNumber)
 				q.errChan <- err
@@ -254,7 +254,7 @@ func (q *QtumDB) Start(ctx context.Context, chainId int, dbCloseChan chan error)
 
 }
 
-func (q *QtumDB) GetRecords() int64 {
+func (q *HtmlcoinDB) GetRecords() int64 {
 	return q.records
 }
 
@@ -263,7 +263,7 @@ func getBar(I int) *progressbar.ProgressBar {
 	bar := progressbar.NewOptions(I,
 		progressbar.OptionEnableColorCodes(true),
 		progressbar.OptionSetWidth(50),
-		progressbar.OptionSetDescription("[cyan][reset]==>Processing 10K Qtum blocks..."),
+		progressbar.OptionSetDescription("[cyan][reset]==>Processing 10K Htmlcoin blocks..."),
 		progressbar.OptionSetTheme(progressbar.Theme{
 			Saucer:        "[green]=[reset]",
 			SaucerHead:    "[green]>[reset]",

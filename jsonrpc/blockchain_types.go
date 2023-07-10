@@ -8,7 +8,7 @@ import (
 
 type HashPair struct {
 	BlockNumber int
-	QtumHash    string
+	HtmlcoinHash    string
 	EthHash     string
 }
 

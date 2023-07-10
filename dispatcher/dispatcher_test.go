@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qtumproject/ethereum-block-processor/log"
-	"github.com/qtumproject/ethereum-block-processor/workers"
+	"github.com/denuoweb/ethereum-block-processor/log"
+	"github.com/denuoweb/ethereum-block-processor/workers"
 )
 
 func TestDispatcher(t *testing.T) {
@@ -22,7 +22,7 @@ func TestDispatcher(t *testing.T) {
 	server := makeJSONRPCServer()
 	defer server.Close()
 	urlsGood := []*url.URL{
-		{ // QTUM
+		{ // HTMLCOIN
 			Scheme: "http",
 			Host:   server.Listener.Addr().String(),
 			Path:   "/eth_getBlockByNumber",

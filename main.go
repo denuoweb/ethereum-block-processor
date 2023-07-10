@@ -10,19 +10,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/qtumproject/ethereum-block-processor/cache"
-	"github.com/qtumproject/ethereum-block-processor/db"
-	"github.com/qtumproject/ethereum-block-processor/dispatcher"
-	"github.com/qtumproject/ethereum-block-processor/eth"
-	"github.com/qtumproject/ethereum-block-processor/jsonrpc"
-	"github.com/qtumproject/ethereum-block-processor/log"
+	"github.com/denuoweb/ethereum-block-processor/cache"
+	"github.com/denuoweb/ethereum-block-processor/db"
+	"github.com/denuoweb/ethereum-block-processor/dispatcher"
+	"github.com/denuoweb/ethereum-block-processor/eth"
+	"github.com/denuoweb/ethereum-block-processor/jsonrpc"
+	"github.com/denuoweb/ethereum-block-processor/log"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
 	chainId    = kingpin.Flag("chain-id", "chain id").Int()
-	providers  = kingpin.Flag("providers", "qtum rpc providers").Default("https://janus.qiswap.com").Short('p').URLList()
+	providers  = kingpin.Flag("providers", "htmlcoin rpc providers").Default("https://janus.qiswap.com").Short('p').URLList()
 	numWorkers = kingpin.Flag("workers", "Number of workers. Defaults to system's number of CPUs.").Default(strconv.Itoa(runtime.NumCPU())).Short('w').Int()
 	debug      = kingpin.Flag("debug", "debug mode").Short('d').Default("false").Bool()
 	blockFrom  = kingpin.Flag("from", "block number to start scanning from (default: 'Latest'").Short('f').Default("0").Int64()
@@ -32,7 +32,7 @@ var (
 	port     = kingpin.Flag("port", "database port").Default("5432").String()
 	user     = kingpin.Flag("user", "database username").Default("dbuser").String()
 	password = kingpin.Flag("password", "database password").Default("dbpass").String()
-	dbname   = kingpin.Flag("dbname", "database name").Default("qtum").String()
+	dbname   = kingpin.Flag("dbname", "database name").Default("htmlcoin").String()
 	ssl      = kingpin.Flag("ssl", "database ssl").Bool()
 
 	dbConnectionString = kingpin.Flag("dbstring", "database connection string").String()
@@ -86,7 +86,7 @@ func main() {
 		connectionString = *dbConnectionString
 	}
 
-	qdb, err := db.NewQtumDB(ctx, connectionString, resultChan, errChan)
+	qdb, err := db.NewHtmlcoinDB(ctx, connectionString, resultChan, errChan)
 	checkError(err)
 	dbCloseChan := make(chan error)
 	qdb.Start(ctx, *chainId, dbCloseChan)

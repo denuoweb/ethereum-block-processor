@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/qtumproject/ethereum-block-processor/jsonrpc"
+	"github.com/denuoweb/ethereum-block-processor/jsonrpc"
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,13 +19,13 @@ func GetLatestBlock(ctx context.Context, logger *logrus.Entry, url string) (late
 		logger.Error("rpc response error: ", rpcResponse.Error)
 		return
 	}
-	var qtumBlock jsonrpc.GetBlockByNumberResponse
-	err = jsonrpc.GetBlockFromRPCResponse(rpcResponse, &qtumBlock)
+	var htmlcoinBlock jsonrpc.GetBlockByNumberResponse
+	err = jsonrpc.GetBlockFromRPCResponse(rpcResponse, &htmlcoinBlock)
 	if err != nil {
-		logger.Error("could not convert result to qtum.GetBlockByNumberResponse", err)
+		logger.Error("could not convert result to htmlcoin.GetBlockByNumberResponse", err)
 		return
 	}
-	latestBlock, _ = strconv.ParseInt(qtumBlock.Number, 0, 64)
+	latestBlock, _ = strconv.ParseInt(htmlcoinBlock.Number, 0, 64)
 	logger.Debug("LatestBlock: ", latestBlock)
 	return
 }

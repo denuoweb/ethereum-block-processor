@@ -1,9 +1,9 @@
 
-# Qtum block hash to Ethereum block hash converter
+# Htmlcoin block hash to Ethereum block hash converter
 
-Qtum (Bitcoin) block hashes are calculated using `SHA256`
+Htmlcoin (Bitcoin) block hashes are calculated using `SHA256`
 Instead Ethereum uses `keccak256` as its hashing algorithm.
-This program scans all the blocks from Qtum network (aprox 1.7 millions) and for each qtum block calculates the corresponding ethereum hash and stores the pair of hashes in a `Postgres` database
+This program scans all the blocks from Htmlcoin network (aprox 1.7 millions) and for each htmlcoin block calculates the corresponding ethereum hash and stores the pair of hashes in a `Postgres` database
 
 ## Features
 
@@ -24,7 +24,7 @@ usage: main [<flags>]
 Flags:
       --help        Show context-sensitive help (also try --help-long and --help-man).
   -p, --providers=https://janus.qiswap.com ...  
-                    qtum rpc providers
+                    htmlcoin rpc providers
   -w, --workers=12  Number of workers. Defaults to system's number of CPUs.
   -d, --debug       debug mode
   -f, --from=0      block number to start scanning from (default: 'Latest'
