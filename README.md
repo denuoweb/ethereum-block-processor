@@ -3,7 +3,7 @@
 
 Htmlcoin (Bitcoin) block hashes are calculated using `SHA256`
 Instead Ethereum uses `keccak256` as its hashing algorithm.
-This program scans all the blocks from Htmlcoin network (aprox 1.7 millions) and for each htmlcoin block calculates the corresponding ethereum hash and stores the pair of hashes in a `Postgres` database
+This program scans all the blocks from Htmlcoin network and for each htmlcoin block calculates the corresponding ethereum hash and stores the pair of hashes in a `Postgres` database
 
 ## Features
 
