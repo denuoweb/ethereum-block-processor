@@ -22,7 +22,7 @@ import (
 
 var (
 	chainId    = kingpin.Flag("chain-id", "chain id").Int()
-	providers  = kingpin.Flag("providers", "htmlcoin rpc providers").Default("https://janus.qiswap.com").Short('p').URLList()
+	providers  = kingpin.Flag("providers", "htmlcoin rpc providers").Default("https://info.htmlcoin.com/janusapi").Short('p').URLList()
 	numWorkers = kingpin.Flag("workers", "Number of workers. Defaults to system's number of CPUs.").Default(strconv.Itoa(runtime.NumCPU())).Short('w').Int()
 	debug      = kingpin.Flag("debug", "debug mode").Short('d').Default("false").Bool()
 	blockFrom  = kingpin.Flag("from", "block number to start scanning from (default: 'Latest'").Short('f').Default("0").Int64()
